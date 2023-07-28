@@ -1,7 +1,10 @@
 import fs from 'fs'
 import path from 'path'
+import dotenv from 'dotenv'
 import puppeteer from 'puppeteer'
 import download from 'image-downloader'
+
+dotenv.config()
 
 function downloadImage(url, filepath) {
   return download.image({
@@ -10,7 +13,13 @@ function downloadImage(url, filepath) {
   })
 }
 
+const siteUrl = process.env.URL
+
 ;(async () => {
+  if (!siteUrl) {
+    throw new Error('URL não definido no arquivo .env')
+  }
+
   // Create a folder with the current date to save the images
   const currentDate = new Date().toISOString().slice(0, 10)
   const downloadFolderPath = path.resolve(__dirname, `img-${currentDate}`)
@@ -26,7 +35,7 @@ function downloadImage(url, filepath) {
   const page = await browser.newPage()
 
   // Navigate the page to a URL
-  await page.goto('https://ge.globo.com/')
+  await page.goto(siteUrl)
 
   // Set screen size
   await page.setViewport({ width: 1080, height: 1024 })
@@ -44,11 +53,10 @@ function downloadImage(url, filepath) {
   console.log('urls', urls)
 
   // Get the first 3 URLs
-  const slicedUrls = urls.slice(0, 3)
 
   // Download the images
-  for await (const [urlIndex, url] of slicedUrls.entries()) {
-    console.log(`Crawleando página ${urlIndex + 1} de ${slicedUrls.length}...`)
+  for await (const [urlIndex, url] of urls.entries()) {
+    console.log(`Crawleando página ${urlIndex + 1} de ${urls.length}...`)
 
     await page.goto(url)
 
