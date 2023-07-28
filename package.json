@@ -1,12 +1,12 @@
 {
-  "name": "Crawler-GE-Images",
+  "name": "crawler-ge-images",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "tsx": "tsx",
-    "start": "tsx index.ts",
-    "start:news": "tsx get-news.ts",
+    "start": "tsx src/index.ts",
+    "start:news": "tsx src/get-news.ts",
     "postinstall": "cd node_modules/puppeteer && npm i && cd ../..",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
