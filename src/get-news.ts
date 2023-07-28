@@ -1,3 +1,4 @@
+import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer'
 import download from 'image-downloader'
@@ -8,11 +9,19 @@ function downloadImage(url, filepath) {
     dest: filepath,
   })
 }
+
 ;(async () => {
+  // Create a folder with the current date to save the images
+  const currentDate = new Date().toISOString().slice(0, 10)
+  const downloadFolderPath = path.resolve(__dirname, currentDate)
+  if (!fs.existsSync(downloadFolderPath)) {
+    fs.mkdirSync(downloadFolderPath)
+  }
+
   // Launch the browser and open a new blank page
   const browser = await puppeteer.launch({
     ignoreDefaultArgs: ['--disable-extensions'],
-    headless: false,
+    headless: true,
   })
   const page = await browser.newPage()
 
@@ -23,6 +32,7 @@ function downloadImage(url, filepath) {
   await page.setViewport({ width: 1080, height: 1024 })
   await page.waitForSelector('.bstn-hl.type-materia.with-photo')
 
+  // Get all image URLs
   const urls = await page.evaluate(() => {
     const anchors: any[] = Array.from(
       document.querySelectorAll('.bstn-hl.type-materia.with-photo a')
@@ -33,8 +43,10 @@ function downloadImage(url, filepath) {
 
   console.log('urls', urls)
 
+  // Get the first 3 URLs
   const slicedUrls = urls.slice(0, 3)
 
+  // Download the images
   for await (const [urlIndex, url] of slicedUrls.entries()) {
     console.log(`Crawleando página ${urlIndex + 1} de ${slicedUrls.length}...`)
 
@@ -57,7 +69,7 @@ function downloadImage(url, filepath) {
 
       await downloadImage(
         imageUrl,
-        path.resolve(__dirname, `page-${urlIndex}-${imageIndex}.jpg`)
+        path.resolve(downloadFolderPath, `page-${urlIndex}-${imageIndex}.jpg`)
       )
     }
   }
