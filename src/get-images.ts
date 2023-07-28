@@ -13,7 +13,7 @@ function downloadImage(url, filepath) {
 ;(async () => {
   // Create a folder with the current date to save the images
   const currentDate = new Date().toISOString().slice(0, 10)
-  const downloadFolderPath = path.resolve(__dirname, currentDate)
+  const downloadFolderPath = path.resolve(__dirname, `img-${currentDate}`)
   if (!fs.existsSync(downloadFolderPath)) {
     fs.mkdirSync(downloadFolderPath)
   }
